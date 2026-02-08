@@ -63,5 +63,5 @@ app.get("/admin", (req, res) => {
 app.use(express.static("public"));
 
 app.listen(PORT, () => {
-  console.log("JWT challenge running on http://localhost:${PORT}");
+  console.log("JWT challenge running on http://localhost:3000");
 });
