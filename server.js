@@ -1,18 +1,20 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 
 const app = express();
-app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-// ⚠️ Secret exists but is never actually used correctly
-const JWT_SECRET = "super-secret-key";
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = "supersecret";
 
-// Fake flag (server-side only)
-const FLAG = "FLAG{jwt_privilege_escalation_success}";
+const FLAG = process.env.FLAG || "FLAG{dummy_flag_for_dev}";
 
-// Issue a guest token
-app.get("/login", (req, res) => {
-  const token = jwt.sign(
+// Main guest page
+app.get("/", (req, res) => {
+  if (!req.cookies["jwt-role"]) {
+    const cookie_token = jwt.sign(
     {
       username: "guest",
       role: "guest"
@@ -21,45 +23,45 @@ app.get("/login", (req, res) => {
     { expiresIn: "1h" }
   );
 
-  res.json({
-    message: "Logged in as guest",
-    token
-  });
+    res.cookie("jwt-role", cookie_token, {
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: 3600 * 1000
+    });
+  }
+
+  res.sendFile(__dirname + "/public/index.html");
 });
 
-// Middleware (INTENTIONALLY BROKEN)
-function authenticate(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) {
-    return res.status(401).json({ error: "Missing token" });
+app.get("/admin", (req, res) => {
+  const token = req.cookies["jwt-role"];
+  if (!token) {
+    return res.status(401).send("Unauthorized - no token");
   }
 
-  const token = authHeader.split(" ")[1];
+  try {
+    const payload = jwt.verify(token,JWT_SECRET);
 
-  // ❌ VULNERABILITY:
-  // Token is decoded but NEVER verified
-  const decoded = jwt.decode(token);
+    if (!payload) {
+      return res.status(401).send("Invalid token format");
+    }
 
-  if (!decoded) {
-    return res.status(401).json({ error: "Invalid token" });
+    if (payload.role === "admin") {
+      res.send(`
+        <h1>Admin Panel</h1>
+        <p>Welcome ADMIN</p>
+        <p><strong>Flag:</strong> ${FLAG}</p>
+      `);
+    } else {
+      res.status(403).send("Access denied: admin only");
+    }
+  } catch (err) {
+    res.status(401).send("Unauthorized - invalid token");
   }
-
-  req.user = decoded;
-  next();
-}
-
-// Admin-only endpoint
-app.get("/admin", authenticate, (req, res) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ error: "Admins only" });
-  }
-
-  res.json({
-    message: "Welcome admin",
-    flag: FLAG
-  });
 });
 
-app.listen(3000, () => {
-  console.log("JWT challenge running on http://localhost:3000");
+app.use(express.static("public"));
+
+app.listen(PORT, () => {
+  console.log("JWT challenge running on http://localhost:${PORT}");
 });
