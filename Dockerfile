@@ -1,13 +1,15 @@
-FROM node:18-alpine
+FROM node:24-alpine
 
 # Create app directory
 WORKDIR /app
+
+RUN corepack enable
 
 # Copy package files first (better caching)
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN pnpm install
 
 # Copy the rest of the source code
 COPY . .
