@@ -32,7 +32,8 @@ The challenge will be available at :
 
 http://localhost:3000
 
-Rules : 
--Do not modify the source code
--Do not brute-force secrets (very easy to found)
--The flag is not important, but finding the way to get it through the exploit is 
+## Rules : 
+
+- Do not modify the source code
+- Do not brute-force secrets (very easy to found)
+- The flag is not important, but finding the way to get it through the exploit is 
