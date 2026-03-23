@@ -7,8 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = "supersecret";
-
+const JWT_SECRET = process.env.JWT_SECRET || "the secret may be very weak, rockyou!";
 const FLAG = process.env.FLAG || "FLAG{dummy_flag_for_dev}";
 
 // Main guest page

@@ -16,6 +16,8 @@ COPY . .
 
 ENV FLAG=FLAG{jwt_privilege_escalation_success}
 
+ENV JWT_SECRET=congratulations
+
 EXPOSE 3000
 
 CMD ["node", "server.js"]

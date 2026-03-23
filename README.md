@@ -10,14 +10,14 @@ The application uses JSON Web Tokens to manage user roles.
 
 Your goal is to **gain access to the admin panel** and retrieve the flag.
 
-The challenge is based on a **realistic JWT security flaw** and does not require brute force or source code modification.
+The challenge is based on a **realistic JWT security flaw** and may require brute force but no source code modification.
 
 ## Learning Objectives
 
 - Understand how JWTs work
 - Identify insecure JWT handling
 - Exploit a privilege escalation vulnerability
-- Gain hands-on experience with web security concepts
+- Gain hands-on experience with web security concepts and usage of modern tools.
 
 ## Running the Challenge
 
@@ -35,5 +35,4 @@ http://localhost:3000
 ## Rules : 
 
 - Do not modify the source code
-- Do not brute-force secrets (very easy to found)
-- The flag is not important, but finding the way to get it through the exploit is 
+
